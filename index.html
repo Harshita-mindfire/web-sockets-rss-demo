@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Real-time News Updates</title>
+  </head>
+  <body>
+    <h1>Real-time News Updates</h1>
+    <ul id="newsList"></ul>
+
+    <script>
+      const socket = new WebSocket("ws://localhost:8080");
+
+      // Handle WebSocket connection open
+      socket.onopen = () => {
+        console.log("WebSocket connection established.");
+      };
+
+      // Handle received WebSocket data
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "newsUpdate") {
+          const news = data.data;
+          const newsList = document.getElementById("newsList");
+
+          // Clear previous news
+          while (newsList.firstChild) {
+            newsList.firstChild.remove();
+          }
+
+          // Add updated news to the list
+          for (const item of news) {
+            const li = document.createElement("li");
+            li.textContent = item.title;
+            newsList.appendChild(li);
+          }
+        }
+      };
+
+      // Handle WebSocket connection close
+      socket.onclose = () => {
+        console.log("WebSocket connection closed.");
+      };
+    </script>
+  </body>
+</html>
